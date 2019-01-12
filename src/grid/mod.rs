@@ -16,6 +16,7 @@
 
 use std::cmp::{min, max, Ordering};
 use std::ops::{Deref, Range, Index, IndexMut, RangeTo, RangeFrom, RangeFull};
+use interact::Interact;
 
 use crate::index::{self, Point, Line, Column, IndexRange};
 use crate::selection::Selection;
@@ -65,10 +66,11 @@ impl<T: PartialEq> ::std::cmp::PartialEq for Grid<T> {
 }
 
 /// Represents the terminal display contents
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Interact)]
 pub struct Grid<T> {
     /// Lines in the grid. Each row holds a list of cells corresponding to the
     /// columns in that row.
+    #[interact(skip)]
     raw: Storage<T>,
 
     /// Number of columns
@@ -93,6 +95,7 @@ pub struct Grid<T> {
 
     /// Selected region
     #[serde(skip)]
+    #[interact(skip)]
     pub selection: Option<Selection>,
 
     #[serde(default)]

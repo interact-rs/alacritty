@@ -45,3 +45,54 @@ impl<T> FairMutex<T> {
         self.data.lock()
     }
 }
+
+use interact::access::{Access, ReflectDirect};
+use interact::climber::{ClimbError, Climber};
+use interact::deser::{self, Tracker};
+use interact::{Deser, NodeTree, Reflector};
+use std::sync::Arc;
+
+impl<T> ReflectDirect for FairMutex<T>
+    where T: Access
+{
+    fn immut_reflector(&self, reflector: &Arc<Reflector>) -> NodeTree {
+        let locked = self.lock();
+        Reflector::reflect(reflector, &*locked)
+    }
+
+    fn immut_climber<'a>(&self, climber: &mut Climber<'a>) -> Result<Option<NodeTree>, ClimbError> {
+        let save = climber.clone();
+        let retval = {
+            let locked = self.lock();
+            climber.general_access_immut(&*locked).map(Some)
+        };
+
+        if let Err(ClimbError::NeedMutPath) = &retval {
+            *climber = save;
+            let mut locked = self.lock();
+            climber.general_access_mut(&mut *locked).map(Some)
+        } else {
+            retval
+        }
+    }
+
+    fn mut_climber<'a>(&mut self, climber: &mut Climber<'a>) -> Result<Option<NodeTree>, ClimbError> {
+        let mut locked = self.lock();
+        climber.general_access_mut(&mut *locked).map(Some)
+    }
+}
+
+impl<T> Deser for FairMutex<T>
+where
+    T: Deser,
+{
+    fn deser<'a, 'b>(tracker: &mut Tracker<'a, 'b>) -> deser::Result<Self> {
+        Ok(FairMutex::new(T::deser(tracker)?))
+    }
+}
+
+use interact::derive_interact_extern_opqaue;
+
+derive_interact_extern_opqaue! {
+    struct FairMutex<T>;
+}

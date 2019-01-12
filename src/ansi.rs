@@ -15,7 +15,7 @@
 //! ANSI Terminal Stream Parsing
 use std::io;
 use std::ops::Range;
-use std::str;
+use interact::Interact;
 
 use vte;
 use base64;
@@ -683,7 +683,7 @@ impl Default for CharsetIndex {
 }
 
 /// Standard or common character sets which can be designated as G0-G3
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Interact)]
 pub enum StandardCharset {
     Ascii,
     SpecialCharacterAndLineDrawing,
@@ -762,7 +762,7 @@ impl<'a, H, W> vte::Perform for Performer<'a, H, W>
             // Set window title
             b"0" | b"2" => {
                 if params.len() >= 2 {
-                    if let Ok(utf8_title) = str::from_utf8(params[1]) {
+                    if let Ok(utf8_title) = std::str::from_utf8(params[1]) {
                         self.handler.set_title(utf8_title);
                         return;
                     }
@@ -847,7 +847,7 @@ impl<'a, H, W> vte::Perform for Performer<'a, H, W>
                     b"?" => unhandled(params),
                     selection => {
                         if let Ok(string) = base64::decode(selection) {
-                            if let Ok(utf8_string) = str::from_utf8(&string) {
+                            if let Ok(utf8_string) = std::str::from_utf8(&string) {
                                 self.handler.set_clipboard(utf8_string);
                             }
                         }

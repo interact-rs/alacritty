@@ -20,6 +20,7 @@ use std::time::{Duration, Instant};
 
 use arraydeque::ArrayDeque;
 use unicode_width::UnicodeWidthChar;
+use interact::Interact;
 
 use font::{self, Size};
 use crate::ansi::{self, Color, NamedColor, Attr, Handler, CharsetIndex, StandardCharset, CursorStyle};
@@ -561,7 +562,7 @@ impl CharsetMapping for StandardCharset {
     }
 }
 
-#[derive(Default, Copy, Clone)]
+#[derive(Default, Copy, Clone, Interact)]
 struct Charsets([StandardCharset; 4]);
 
 impl Index<CharsetIndex> for Charsets {
@@ -577,7 +578,7 @@ impl IndexMut<CharsetIndex> for Charsets {
     }
 }
 
-#[derive(Default, Copy, Clone)]
+#[derive(Default, Copy, Clone, Interact)]
 pub struct Cursor {
     /// The location of this cursor
     pub point: Point,
@@ -708,6 +709,7 @@ impl VisualBell {
     }
 }
 
+#[derive(Interact)]
 pub struct Term {
     /// The grid
     grid: Grid<Cell>,
@@ -738,26 +740,34 @@ pub struct Term {
 
     /// The graphic character set, out of `charsets`, which ASCII is currently
     /// being mapped to
+    #[interact(skip)]
     active_charset: CharsetIndex,
 
     /// Tabstops
+    #[interact(skip)]
     tabs: TabStops,
 
     /// Mode flags
+    #[interact(skip)]
     mode: TermMode,
 
     /// Scroll region
+    #[interact(skip)]
     scroll_region: Range<Line>,
 
     /// Font size
+    #[interact(skip)]
     pub font_size: Size,
+    #[interact(skip)]
     original_font_size: Size,
 
     /// Size
+    #[interact(skip)]
     size_info: SizeInfo,
 
     pub dirty: bool,
 
+    #[interact(skip)]
     pub visual_bell: VisualBell,
     pub next_is_urgent: Option<bool>,
 
@@ -770,18 +780,23 @@ pub struct Term {
     semantic_escape_chars: String,
 
     /// Colors used for rendering
+    #[interact(skip)]
     colors: color::List,
 
     /// Is color in `colors` modified or not
+    #[interact(skip)]
     color_modified: [bool; color::COUNT],
 
     /// Original colors from config
+    #[interact(skip)]
     original_colors: color::List,
 
     /// Current style of the cursor
+    #[interact(skip)]
     cursor_style: Option<CursorStyle>,
 
     /// Default style for resetting the cursor
+    #[interact(skip)]
     default_cursor_style: CursorStyle,
 
     dynamic_title: bool,
@@ -793,6 +808,7 @@ pub struct Term {
     auto_scroll: bool,
 
     /// Proxy object for clearing displayed errors and warnings
+    #[interact(skip)]
     logger_proxy: Option<LoggerProxy>,
 }
 

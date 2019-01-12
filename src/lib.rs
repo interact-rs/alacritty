@@ -23,6 +23,7 @@
 #[cfg(target_os = "macos")]
 #[macro_use]
 extern crate objc;
+extern crate interact;
 
 #[macro_use]
 pub mod macros;
@@ -52,9 +53,10 @@ use std::ops::Mul;
 
 pub use crate::grid::Grid;
 pub use crate::term::Term;
+use interact::Interact;
 
 /// Facade around [winit's `MouseCursor`](glutin::MouseCursor)
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Interact)]
 pub enum MouseCursor {
     Arrow,
     Text,

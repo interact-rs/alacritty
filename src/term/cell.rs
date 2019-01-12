@@ -16,6 +16,7 @@ use bitflags::bitflags;
 use crate::ansi::{NamedColor, Color};
 use crate::grid;
 use crate::index::Column;
+use interact::Interact;
 
 // Maximum number of zerowidth characters which will be stored per cell.
 pub const MAX_ZEROWIDTH_CHARS: usize = 5;
@@ -41,12 +42,16 @@ const fn default_extra() -> [char; MAX_ZEROWIDTH_CHARS] {
     [' '; MAX_ZEROWIDTH_CHARS]
 }
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Interact)]
 pub struct Cell {
     pub c: char,
+    #[interact(skip)]
     pub fg: Color,
+    #[interact(skip)]
     pub bg: Color,
+    #[interact(skip)]
     pub flags: Flags,
+    #[interact(skip)]
     #[serde(default="default_extra")]
     pub extra: [char; MAX_ZEROWIDTH_CHARS],
 }

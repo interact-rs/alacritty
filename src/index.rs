@@ -18,6 +18,7 @@
 use std::cmp::{Ord, Ordering};
 use std::fmt;
 use std::ops::{self, Deref, Add, Range};
+use interact::Interact;
 
 /// The side of a cell
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -27,7 +28,7 @@ pub enum Side {
 }
 
 /// Index in the grid using row, column notation
-#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Serialize, Deserialize, PartialOrd)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Serialize, Deserialize, PartialOrd, Interact)]
 pub struct Point<L=Line> {
     pub line: L,
     pub col: Column,
@@ -73,7 +74,7 @@ impl From<Point> for Point<usize> {
 /// A line
 ///
 /// Newtype to avoid passing values incorrectly
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Default, Ord, PartialOrd, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Default, Ord, PartialOrd, Serialize, Deserialize, Interact)]
 pub struct Line(pub usize);
 
 impl fmt::Display for Line {
@@ -85,7 +86,7 @@ impl fmt::Display for Line {
 /// A column
 ///
 /// Newtype to avoid passing values incorrectly
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Default, Ord, PartialOrd, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Default, Ord, PartialOrd, Serialize, Deserialize, Interact)]
 pub struct Column(pub usize);
 
 impl fmt::Display for Column {

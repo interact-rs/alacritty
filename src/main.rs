@@ -30,6 +30,7 @@ use dirs;
 use winapi::um::wincon::{AttachConsole, FreeConsole, ATTACH_PARENT_PROCESS};
 
 use log::{info, error};
+use interact::Interact;
 
 use std::error::Error;
 use std::sync::Arc;
@@ -109,6 +110,16 @@ fn load_config(options: &cli::Options) -> Config {
     }
 }
 
+fn spawn_interact(term: Arc<FairMutex<Term>>) {
+    let _ = std::thread::spawn(|| {
+        use interact_prompt::*;
+        SendRegistry::insert("term", Box::new(term));
+        let handle = spawn(Settings::default(), ());
+        handle.join().unwrap();
+    });
+}
+
+
 /// Run Alacritty
 ///
 /// Creates a window, the terminal state, pty, I/O event loop, input processor,
@@ -145,6 +156,7 @@ fn run(
     let mut terminal = Term::new(&config, display.size().to_owned());
     terminal.set_logger_proxy(logger_proxy.clone());
     let terminal = Arc::new(FairMutex::new(terminal));
+    spawn_interact(terminal.clone());
 
     // Find the window ID for setting $WINDOWID
     let window_id = display.get_window_id();
